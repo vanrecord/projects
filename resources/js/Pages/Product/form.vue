@@ -1,69 +1,3 @@
-<script setup>
-import { ref, reactive, nextTick } from 'vue';
-import DialogModal from '@/Components/DialogModal.vue';
-import InputError from '@/Components/InputError.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import { Inertia } from '@inertiajs/inertia';
-
-defineProps({
-    product:{
-        type:Object,
-        default: () => ({}),
-    },
-    title: {
-        type: String,
-        default: 'Create Product',
-    },
-    button: {
-        type: String,
-        default: 'Save',
-    },
-});
-
-const IsShowPopUp = ref(false);
-
-const form = reactive({
-    name:'',
-    qty:'',
-    error: '',
-    processing: false,
-});
-
-
-const CreateProduct = () => {
-    IsShowPopUp.value = true;
-};
-
-const savePopUp = () => {
-    form.processing = true;
-
-    axios.post(route('product.store'), {
-        name: form.name,
-        qty: form.qty
-    }).then(() => {
-        form.processing = false;
-        closeModal();
-        Inertia.visit(route('product.index'), {
-          only: ['products'],
-          preserveState: true,
-        });
-
-    }).catch(error => {
-        form.processing = false;
-    });
-};
-
-const closeModal = () => {
-    IsShowPopUp.value = false;
-    form.name = '';
-    form.qty = '',
-    form.error = '';
-};
-</script>
-
 <template>
     <span>
         <span @click="CreateProduct">
@@ -90,13 +24,14 @@ const closeModal = () => {
                     <InputError :message="form.error" class="mt-2" />
                 </div>
                 <div class="mt-4">
+                {{props.product}}
                 <InputLabel for="qty" value="Quantity" />
                     <TextInput
                         v-model="form.qty"
                         type="text"
-                        name="qty"
                         class="mt-1 block w-full"
                         placeholder="Qty"
+                        name="qty"
                         @keyup.enter="savePopUp"
                     />
                     <InputError :message="form.error" class="mt-2" />
@@ -119,3 +54,66 @@ const closeModal = () => {
         </DialogModal>
     </span>
 </template>
+<script setup>
+import { ref, reactive, nextTick } from 'vue';
+import DialogModal from '@/Components/DialogModal.vue';
+import InputError from '@/Components/InputError.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
+import SecondaryButton from '@/Components/SecondaryButton.vue';
+import TextInput from '@/Components/TextInput.vue';
+import InputLabel from '@/Components/InputLabel.vue';
+import { Inertia } from '@inertiajs/inertia';
+
+const props = defineProps({
+    product:{
+        type:Object,
+        default: () => ({}),
+    },
+    title: {
+        type: String,
+        default: 'Create Product',
+    },
+    button: {
+        type: String,
+        default: 'Save',
+    }
+});
+
+const IsShowPopUp = ref(false);
+
+const form = reactive({
+    name:props.product.name?props.product.name:'',
+    qty:props.product.qty?props.product.qty:'',
+    error: '',
+    processing: false,
+});
+
+
+const CreateProduct = () => {
+    IsShowPopUp.value = true;
+};
+
+const savePopUp = () => {
+    form.processing = true;
+
+    axios.post(route('product.store'), {
+        id:props.product.id?props.product.id:'',
+        name: form.name,
+        qty: form.qty
+    }).then(() => {
+        form.processing = false;
+        closeModal();
+        Inertia.visit(route('product.index'), {
+          only: ['products'],
+          preserveState: true,
+        });
+
+    }).catch(error => {
+        form.processing = false;
+    });
+};
+
+const closeModal = () => {
+    IsShowPopUp.value = false;
+};
+</script>

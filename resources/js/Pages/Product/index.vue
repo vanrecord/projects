@@ -77,7 +77,7 @@
                                             <td class="px-6 py-4 text-sm text-gray-800 whitespace-nowrap">
                                                 <div class="float-left pr-5">
                                                     <div class="pt-2 px-3 py-2 text-white bg-blue-500 rounded-lg">
-                                                        <FormProduct>
+                                                        <FormProduct :product="item" :title="title" >
                                                             <PrimaryButton type="button" :class="{ 'opacity-25': enabling }" :disabled="enabling">
                                                                 Edit
                                                             </PrimaryButton>
@@ -107,13 +107,14 @@ import FormProduct from '@/Pages/Product/form.vue';
 import {Link} from '@inertiajs/inertia-vue3';
 import { useForm } from '@inertiajs/inertia-vue3';
 
+let title = "Update Product";
+const form = useForm();
 const props = defineProps({
     products: {
         type: Object,
         default: () => ({}),
     },
 });
-const form = useForm();
 function destroy(id) {
     if (confirm("Are you sure you want to Delete")) {
         form.delete(route('product.destroy', id));

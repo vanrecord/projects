@@ -52,6 +52,7 @@ class ShopController extends Controller
         if($request->id){
             $shop = Shop::find($request->id);
             $shop->update($data);
+            $msg = 'Shop Updated Successfully';
         }else{
             Shop::create([
                 'name' => $request->name,
@@ -59,10 +60,11 @@ class ShopController extends Controller
                 'phone_number' => $request->phone_number,
                 'unactive'    => $request->unactive
             ]);
+            $msg = 'Shop Created Successfully';
         }
         sleep(1);
 
-        return redirect()->route('shop.index')->with('message', 'Shop Created Successfully');
+        return redirect()->route('shop.index')->with('message', $msg);
     }
 
     /**
@@ -84,7 +86,7 @@ class ShopController extends Controller
      */
     public function edit(Shop $shop)
     {
-        return Inertia::render('Shop/form',['shop'=>$shop]);
+        
     }
 
     /**

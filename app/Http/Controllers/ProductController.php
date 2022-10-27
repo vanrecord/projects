@@ -42,15 +42,14 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
+        $data = $request->all();
         $request->validate([
             'name' => 'required|string|max:255',
             'qty' => 'required'
         ]);
         if($request->id){
-            Product::update([
-                'name' => $request->name,
-                'qty' => $request->qty
-            ]);
+            $Product = Product::find($request->id);
+            $Product->update($data);
         }else{
             Product::create([
                 'name' => $request->name,
@@ -83,7 +82,7 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        //
+        return Inertia::render('Product/form',['product'=>$product]);
     }
 
     /**
