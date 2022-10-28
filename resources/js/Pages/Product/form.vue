@@ -10,7 +10,6 @@
             </template>
 
             <template #content>
-
                 <div class="mt-4">
                     <InputLabel for="name" value="Name Product"/>
                     <TextInput
@@ -24,7 +23,6 @@
                     <InputError :message="form.error" class="mt-2" />
                 </div>
                 <div class="mt-4">
-                {{props.product}}
                 <InputLabel for="qty" value="Quantity" />
                     <TextInput
                         v-model="form.qty"

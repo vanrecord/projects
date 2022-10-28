@@ -1,5 +1,5 @@
 <template>
-    <AppLayout title="Dashboard">
+    <AppLayout title="Home">
         <template #header>
         </template>
         <div class="pt-5 pl-8 pr-5">
@@ -22,10 +22,12 @@
                                 </label>
                                 <input
                                     type="text"
-                                    name="search"
+                                    v-model="term"
+                                    @keyup="search"
                                     class="block w-full p-3 pl-10 text-sm border-gray-200 rounded-md focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
                                     placeholder="Search..."
                                 />
+                                {{term}}
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none" >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -106,15 +108,21 @@ import SectionBorder from '@/Components/SectionBorder.vue';
 import FormProduct from '@/Pages/Product/form.vue';
 import {Link} from '@inertiajs/inertia-vue3';
 import { useForm } from '@inertiajs/inertia-vue3';
-
+import { Head } from '@inertiajs/inertia-vue3';
+import { ref } from 'vue';
+import { Inertia } from '@inertiajs/inertia'
 let title = "Update Product";
 const form = useForm();
+const term = ref('');
 const props = defineProps({
     products: {
         type: Object,
         default: () => ({}),
     },
 });
+function search(){
+    Inertia.replace(route('product.index',{term:this.term}));
+}
 function destroy(id) {
     if (confirm("Are you sure you want to Delete")) {
         form.delete(route('product.destroy', id));

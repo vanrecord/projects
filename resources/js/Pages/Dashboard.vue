@@ -1,17 +1,14 @@
 <script>
 import AppLayout from '@/Layouts/AppLayout.vue';
-import TableList from '../Pages/TableList.vue';
 export default{
     components:{
-        AppLayout,
-        TableList
+        AppLayout
     }
 }
 </script>
 <template>
-    <AppLayout title="Dashboard">
+    <AppLayout title="Home">
         <template #header>
         </template>
-        <TableList/>
     </AppLayout>
 </template>

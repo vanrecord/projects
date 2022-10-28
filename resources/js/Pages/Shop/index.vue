@@ -1,5 +1,5 @@
 <template>
-	<AppLayout title="Dashboard">
+	<AppLayout title="Home">
         <template #header>
         </template>
         <div class="pt-5 pl-8 pr-5">

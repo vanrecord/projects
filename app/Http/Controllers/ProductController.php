@@ -13,9 +13,12 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        $products = Product::orderBy('id','desc')->get();
+    public function index( Request $request)
+    {info($request);
+        // $products = Product::orderBy('id','desc')->get();
+        $products = Product::when($request->term, function($query,$term){
+            $query->where('name','LIKE','%'.$term.'%');
+        })->get();
         return Inertia::render(
             'Product/index',
             [
