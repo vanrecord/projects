@@ -22,12 +22,10 @@
                                 </label>
                                 <input
                                     type="text"
-                                    v-model="term"
-                                    @keyup="search"
+                                    v-model="search"
                                     class="block w-full p-3 pl-10 text-sm border-gray-200 rounded-md focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400"
                                     placeholder="Search..."
                                 />
-                                {{term}}
                                 <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none" >
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -60,13 +58,13 @@
                                             <th scope="col" class="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                                 Qty
                                             </th>
-                                            <th scope="col" class="px-6 py-3 text-xs font-bold text-left text-gray-500 uppercase">
+                                            <th scope="col" class="px-6 w-52 py-3 text-xs font-bold text-left text-gray-500 uppercase">
                                                 Action
                                             </th>
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y divide-gray-200">
-                                        <tr v-for="(item,key) in products">
+                                        <tr v-for="(item,key) in products.data">
                                             <td class="px-6 py-4 text-sm font-medium text-gray-800 whitespace-nowrap">
                                                {{key+1}}
                                             </td>
@@ -99,6 +97,7 @@
                 </div>
             </div>
         </div>
+        <Pagination :data="products" />
     </AppLayout>
 </template>
 <script setup>
@@ -109,23 +108,26 @@ import FormProduct from '@/Pages/Product/form.vue';
 import {Link} from '@inertiajs/inertia-vue3';
 import { useForm } from '@inertiajs/inertia-vue3';
 import { Head } from '@inertiajs/inertia-vue3';
-import { ref } from 'vue';
+import { ref,watch } from 'vue';
 import { Inertia } from '@inertiajs/inertia'
+import Pagination from '@/Components/Pagination.vue';
 let title = "Update Product";
 const form = useForm();
-const term = ref('');
 const props = defineProps({
     products: {
         type: Object,
         default: () => ({}),
     },
+    filter: Object
 });
-function search(){
-    Inertia.replace(route('product.index',{term:this.term}));
-}
+const search = ref(props.filter);
 function destroy(id) {
     if (confirm("Are you sure you want to Delete")) {
         form.delete(route('product.destroy', id));
     }
 }
+watch(search, value=>{
+    Inertia.get('/product',{search, value},{preserveState:true,replace:true}
+    );
+})
 </script>

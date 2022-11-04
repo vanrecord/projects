@@ -4,7 +4,7 @@
         </template>
 	    <div class="py-12">
 	        <div class="font-bold text-center">
-	        	Create Shop
+	        	{{title}}
 	        </div>
 	         <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
@@ -79,6 +79,7 @@
                             >
                                 Submit
                             </button>
+                            <button type="button" @click="Cancel" class="text-white bg-blue-700  focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 ">Cancel</button>
 				    	</form>
 				    </div>
 				</div>
@@ -94,14 +95,15 @@ const props = defineProps({
     shop: {
         type: Object,
         default: () => ({}),
-    },
+    }
 });
+const title = props.shop.id?'Edit Shop':'Create Shop';
 const form = useForm({
     id: props.shop.id?props.shop.id:'',
     name: props.shop.name?props.shop.name:'',
     address: props.shop.address?props.shop.address:'',
     phone_number: props.shop.phone_number?props.shop.phone_number:'',
-    unactive: props.shop.unactive?true:false
+    unactive: props.shop.unactive?true:false,
 });
 const submit = () => {
 	form.post(route("shop.store"));

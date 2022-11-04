@@ -13,16 +13,24 @@ class ProductController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index( Request $request)
-    {info($request);
-        // $products = Product::orderBy('id','desc')->get();
-        $products = Product::when($request->term, function($query,$term){
-            $query->where('name','LIKE','%'.$term.'%');
-        })->get();
+    public function index(Request $request)
+    {
+        $data = $request->all();
+        $value_search = !empty($data['value'])?$data['value']:'';
+        $products = Product::query()->when($value_search, function($query,$search){
+            $query->where('name','ILIKE','%'.$search.'%')
+                  ->orWhere('qty','ILIKE','%'.$search.'%')
+                  ;
+        })->paginate(9)->through(fn($products)=>[
+            'id' => $products->id,
+            'name'=> $products->name,
+            'qty'=> $products->qty
+        ]);
         return Inertia::render(
             'Product/index',
             [
-                'products' => $products
+                'products' => $products,
+                'filter'   => $value_search
             ]
         );
     }
@@ -59,9 +67,7 @@ class ProductController extends Controller
                 'qty' => $request->qty
             ]);
         }
-        $products = Product::all();
         sleep(1);
-        return Inertia::render('product/index',['products'=>$products]);
     }
 
     /**

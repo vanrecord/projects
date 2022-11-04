@@ -13,14 +13,25 @@ class ShopController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index( Request $request)
     {
-        $shops = Shop::orderBy('id','desc')->get();
+        $data = $request->all();
+        $data_search = !empty($data['value'])?$data['value']:'';
+        $shops = Shop::query()->when($data_search,function($query,$search){
+            $query->where('name','ILIKE','%'.$search.'%');
+        })->paginate(10)->through(fn($shops)=>[
+            'id' => $shops->id,
+            'name'=> $shops->name,
+            'address'=> $shops->address,
+            'phone_number'=>$shops->phone_number,
+            'unactive'=>$shops->unactive
+        ]);
 
         return Inertia::render(
             'Shop/index',
             [
-                'shops' => $shops
+                'shops' => $shops,
+                'filter'   => $data_search
             ]
         );
     }
@@ -86,7 +97,9 @@ class ShopController extends Controller
      */
     public function edit(Shop $shop)
     {
-        
+        return Inertia::render('Shop/form',[
+            'shop' => $shop
+        ]);
     }
 
     /**
