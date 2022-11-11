@@ -170,7 +170,6 @@
             <template #footer>
                 <SecondaryButton @click="closeModal">
                    Cancel
-
                 </SecondaryButton>
             </template>
         </DialogModal>
@@ -187,6 +186,7 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { Inertia } from '@inertiajs/inertia';
 import Pagination from '@/Components/Pagination.vue';
 import DialogModal from '@/Components/DialogModal.vue';
+import swal from 'sweetalert';
 
 const props= defineProps({
 	shops:{
@@ -196,14 +196,25 @@ const props= defineProps({
     filter:Object,
     item:Object
 })
+
 let title = 'Detail';
 const open = ref(false);
 const search = ref(props.filter);
 const form = useForm();
-function destroy(id) {
-    if (confirm("Are you sure you want to Delete")) {
+const destroy = (id)=> {
+    swal({
+      title: "Are you sure?",
+      text: "Are you sure that you want to delete this record?",
+      icon: "warning",
+      dangerMode: true,
+      buttons: {cancel:true, confirm:true}
+    })
+    .then(willDelete => {
+      if (willDelete) {
         form.delete(route('shop.destroy', id));
-    }
+        // swal("Deleted!", "Your imaginary file has been deleted!", "success");
+      }
+    });
 }
 const showDetail = (item) =>{
     form.name = item.name;

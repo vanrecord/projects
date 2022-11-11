@@ -79,7 +79,8 @@
                             >
                                 Submit
                             </button>
-                            <button type="button" @click="Cancel" class="text-white bg-blue-700  focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 ">Cancel</button>
+                            <button type="button" @click="goBack('/shop')" class="ml-2 text-white bg-red-400  focus:outline-none  font-medium rounded-lg text-sm px-5 py-2.5 ">Cancel
+                            </button>
 				    	</form>
 				    </div>
 				</div>
@@ -91,6 +92,7 @@
 import AppLayout from '@/Layouts/AppLayout.vue';
 import {Link} from '@inertiajs/inertia-vue3';
 import { useForm } from "@inertiajs/inertia-vue3";
+import { Inertia } from '@inertiajs/inertia'
 const props = defineProps({
     shop: {
         type: Object,
@@ -108,4 +110,11 @@ const form = useForm({
 const submit = () => {
 	form.post(route("shop.store"));
 };
+const goBack = (url) => {
+    if(url){
+        Inertia.visit(url);
+    }else{
+        window.history.back();
+    }
+}
 </script>
