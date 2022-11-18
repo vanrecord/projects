@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class ProductController extends Controller
 {
@@ -26,13 +29,32 @@ class ProductController extends Controller
             'name'=> $products->name,
             'qty'=> $products->qty
         ]);
+        // $globalSearch = AllowedFilter::callback('global', function ($query, $value) {
+        //     $query->where(function ($query) use ($value) {
+        //         Collection::wrap($value)->each(function ($value) use ($query) {
+        //             $query
+        //                 ->orWhere('name', 'ILIKE', "%{$value}%")
+        //                 ->orWhere('qty', 'ILIKE', "%{$value}%");
+        //         });
+        //     });
+        // });
+        // $products = QueryBuilder::for(Product::class)
+        // ->defaultSort('name')
+        // ->allowedSorts(['name'])
+        // ->allowedFilters(['name','id', $globalSearch])
+        // ->paginate(10)
+        // ->withQueryString();
         return Inertia::render(
             'Product/index',
             [
                 'products' => $products,
-                'filter'   => $value_search
+                // 'filter'   => $value_search
             ]
         );
+        // return Inertia::render('Product/index', ['products' => $products])->table(function (InertiaTable $table) {
+        //     $table->column('id', 'ID', searchable: true, sortable: true);
+        //     $table->column('name', 'User Name', searchable: true, sortable: true);
+        // });
     }
 
     /**

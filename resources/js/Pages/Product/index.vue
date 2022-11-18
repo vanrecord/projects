@@ -111,6 +111,7 @@ import { Head } from '@inertiajs/inertia-vue3';
 import { ref,watch } from 'vue';
 import { Inertia } from '@inertiajs/inertia'
 import Pagination from '@/Components/Pagination.vue';
+import swal from "sweetalert";
 let title = "Update Product";
 const form = useForm();
 const props = defineProps({
@@ -121,10 +122,19 @@ const props = defineProps({
     filter: Object
 });
 const search = ref(props.filter);
-function destroy(id) {
-    if (confirm("Are you sure you want to Delete")) {
-        form.delete(route('product.destroy', id));
-    }
+
+const destroy = (id)=>{
+    swal({
+        title: "Are you sure?",
+        text: "Are you sure that you want to delete this record?",
+        icon: "warning",
+        dangerMode: true,
+        button: {cancel:true,confirm:true}
+    }).then(willDelete=> {
+        if(willDelete){
+            form.delete(route('product.destroy', id));
+        }
+    })
 }
 watch(search, value=>{
     Inertia.get('/product',{search, value},{preserveState:true,replace:true}

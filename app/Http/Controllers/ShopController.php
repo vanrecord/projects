@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use ProtoneMedia\LaravelQueryBuilderInertiaJs\InertiaTable;
+use Spatie\QueryBuilder\AllowedFilter;
+use Spatie\QueryBuilder\QueryBuilder;
 
 class ShopController extends Controller
 {
@@ -15,25 +18,31 @@ class ShopController extends Controller
      */
     public function index( Request $request)
     {
-        $data = $request->all();
-        $data_search = !empty($data['value'])?$data['value']:'';
-        $shops = Shop::query()->when($data_search,function($query,$search){
-            $query->where('name','ILIKE','%'.$search.'%');
-        })->paginate(10)->through(fn($shops)=>[
-            'id' => $shops->id,
-            'name'=> $shops->name,
-            'address'=> $shops->address,
-            'phone_number'=>$shops->phone_number,
-            'unactive'=>$shops->unactive
-        ]);
+        $perPage = !empty($request->perPage)?$request->perPage:9;
+        $globalSearch = AllowedFilter::callback('global', function ($query, $value) {
+            $query->where(function ($query) use ($value) {
+                Collection::wrap($value)->each(function ($value) use ($query) {
+                    $query
+                        ->orWhere('name', 'LIKE', "%{$value}%")
+                        ->orWhere('address', 'LIKE', "%{$value}%");
+                });
+            });
+        });
+        $shops = QueryBuilder::for(Shop::class)
+        ->defaultSort('name')
+        ->allowedSorts(['name', 'address','phone_number'])
+        ->allowedFilters(['name', 'address','phone_number', $globalSearch])
+        ->paginate($perPage)
+        ->withQueryString();
+        return Inertia::render('Shop/index', ['shops' => $shops,'index'=>0])->table(function (InertiaTable $table) {
+            $table->pageName('companiesPage');
+            $table->column('id', 'No', searchable: false, sortable: false);
+            $table->column('name', 'Name', searchable: true, sortable: true);
+            $table->column('phone_number', 'Phone Number', searchable: true, sortable: true);
+            $table->column('address', 'Address', searchable: true, sortable: true);
+            $table->column(label: 'Actions');
 
-        return Inertia::render(
-            'Shop/index',
-            [
-                'shops' => $shops,
-                'filter'   => $data_search
-            ]
-        );
+        });
     }
 
     /**
